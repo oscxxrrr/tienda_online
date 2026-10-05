@@ -1,0 +1,53 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>TIENDA ONLINE</title>
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <?php
+         // 1. BIENVENIDA Y ACCIONES DE USUARIO
+         if(isset($_SESSION['user'])){
+             echo "<div class='user-welcome'>Bienvenido, <strong>" . $_SESSION['user']->getUsername() . "</strong></div>";
+             echo "<a href='index.php?accion=logout' class='logout-link'>Cerrar sesión</a><br><hr>";
+         } 
+         
+         // 2. CATÁLOGO DE PRODUCTOS: 
+         echo "<h2>Catálogo de Productos</h2>";
+         
+
+
+         // 3. LOGIN Y REGISTRO DE USUARIO:
+         if(!isset($_SESSION['user'])){
+             echo "<hr>";
+             if (isset($_GET['accion']) && $_GET['accion'] === 'registro'){
+                 ?>
+                 <form action="index.php" method="POST" class="login-form">
+                     <h3>Registro de Usuario</h3>
+                     <br>
+                     <input type="text" name="username" placeholder="Usuario" required><br><br>
+                     <input type="email" name="email" placeholder="Email" required><br><br>
+                     <input type="password" name="password" placeholder="Contraseña" required><br><br>
+                     <input type="submit" value="Registrar" name="register" class="btn-primary">
+                     <br><br>
+                     <a href="index.php" style="font-size: 13px;">¿Ya tienes cuenta? Inicia sesión</a>
+                 </form>
+                 <?php
+             } else {
+                 ?>
+                 <form action="" method="POST" class="login-form">
+                     <h3>Iniciar Sesión</h3>
+                     <br>
+                     <input type="text" name="username" placeholder="Usuario" required><br><br>
+                     <input type="password" name="password" placeholder="Contraseña" required><br><br>
+                     <input type="submit" value="Entrar" class="btn-primary">
+                     <br><br>
+                     <a href="index.php?accion=registro" style="font-size: 13px;">¿No tienes cuenta? Regístrate</a>
+                 </form>
+                 <?php
+             }
+         } 
+        ?>
+    </body>
+</html>
