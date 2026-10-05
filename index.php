@@ -6,6 +6,7 @@ require_once 'models/producto.php';
 require_once 'models/carrito.php';
 require_once 'repositories/ProductRepository.php';
 require_once 'repositories/CarritoRepository.php';
+require_once 'repositories/UserRepository.php';
 
 session_start();
 
