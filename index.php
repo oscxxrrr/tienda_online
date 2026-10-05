@@ -10,4 +10,5 @@ if (file_exists(__DIR__ . '/.env')) {
 require_once 'bd.php';
 $conn = db::connect();
 require_once 'controlers/main_controller.php';
+include 'views/mainView.phtml';
 ?>
