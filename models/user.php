@@ -1,36 +1,41 @@
 <?php
 class User {
-    private $id;
-    private string $username;
-    private string $email = ""; 
-    private string $password = "";
-    private int $state = 0;
+    private $id_usuario;
+    private string $nombre;
+    private string $correo_electronico = ""; 
+    private string $contraseña = "";
+    private string $direccion_envio = "";
 
-    public function __construct($id, string $username, string $password = "")
+    public function __construct($id_usuario, string $nombre, string $contraseña = "", string $correo_electronico = "", string $direccion_envio = "")
     {
-        $this->id = $id;
-        $this->username = $username;
-        $this->password = $password;
-        $this->state = 1;
+        $this->id_usuario = $id_usuario;
+        $this->nombre = $nombre;
+        $this->contraseña = $contraseña;
+        $this->correo_electronico = $correo_electronico;
+        $this->direccion_envio = $direccion_envio;
     }
 
-    public function getUserName() { return $this->username; }
-    public function getEmail() { return $this->email; }
-    public function getPassword() { return $this->password; }
-    public function getId() { return $this->id; }
-    public function getState() { return $this->state; }
+    public function getUserName() { return $this->nombre; }
+    public function getEmail() { return $this->correo_electronico; }
+    public function getPassword() { return $this->contraseña; }
+    public function getDireccionEnvio() { return $this->direccion_envio; }
+    public function getId() { return $this->id_usuario; }
 
     public function setUsername(string $username) {
-        $this->username = $username;
-        return $this->username;
+        $this->nombre = $username;
+        return $this->nombre;
     }
     public function setEmail(string $email) {
-        $this->email = $email;
-        return $this->email;
+        $this->correo_electronico = $email;
+        return $this->correo_electronico;
     }
     public function setPassword(string $password) {
-        $this->password = $password;
-        return $this->password;
+        $this->contraseña = $password;
+        return $this->contraseña;
+    }
+    public function setDireccionEnvio(string $direccion) {
+        $this->direccion_envio = $direccion;
+        return $this->direccion_envio;
     }
 } 
 ?>
