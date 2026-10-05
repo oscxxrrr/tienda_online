@@ -6,13 +6,13 @@ class User {
     private string $contraseña = "";
     private string $direccion_envio = "";
 
-    public function __construct($id_usuario, string $nombre, string $contraseña = "", string $correo_electronico = "", string $direccion_envio = "")
+    public function __construct($id_usuario, string $nombre, ?string $contraseña = "", ?string $correo_electronico = "", ?string $direccion_envio = "")
     {
         $this->id_usuario = $id_usuario;
         $this->nombre = $nombre;
-        $this->contraseña = $contraseña;
-        $this->correo_electronico = $correo_electronico;
-        $this->direccion_envio = $direccion_envio;
+        $this->contraseña = $contraseña ?? "";
+        $this->correo_electronico = $correo_electronico ?? "";
+        $this->direccion_envio = $direccion_envio ?? "";
     }
 
     public function getUserName() { return $this->nombre; }

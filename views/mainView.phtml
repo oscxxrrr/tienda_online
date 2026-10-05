@@ -7,18 +7,21 @@
     </head>
     <body>
         <?php
-         // 1. BIENVENIDA Y ACCIONES DE USUARIO
+         // 1. MENSAJES DE INFORMACIÓN
+         if(isset($info)){
+             echo "<div class='info-msg'>" . $info . "</div>";
+         }
+
+         // 2. BIENVENIDA Y ACCIONES DE USUARIO
          if(isset($_SESSION['user'])){
-             echo "<div class='user-welcome'>Bienvenido, <strong>" . $_SESSION['user']->getUsername() . "</strong></div>";
+             echo "<div class='user-welcome'>Bienvenido, <strong>" . htmlspecialchars($_SESSION['user']->getUserName()) . "</strong></div>";
              echo "<a href='index.php?accion=logout' class='logout-link'>Cerrar sesión</a><br><hr>";
-         } 
-         
-         // 2. CATÁLOGO DE PRODUCTOS: 
+         }
+
+         // 3. CATÁLOGO DE PRODUCTOS:
          echo "<h2>Catálogo de Productos</h2>";
-         
 
-
-         // 3. LOGIN Y REGISTRO DE USUARIO:
+         // 4. LOGIN Y REGISTRO DE USUARIO:
          if(!isset($_SESSION['user'])){
              echo "<hr>";
              if (isset($_GET['accion']) && $_GET['accion'] === 'registro'){
@@ -29,14 +32,15 @@
                      <input type="text" name="username" placeholder="Usuario" required><br><br>
                      <input type="email" name="email" placeholder="Email" required><br><br>
                      <input type="password" name="password" placeholder="Contraseña" required><br><br>
-                     <input type="submit" value="Registrar" name="register" class="btn-primary">
+                     <input type="hidden" name="register" value="1">
+                     <input type="submit" value="Registrar" class="btn-primary">
                      <br><br>
                      <a href="index.php" style="font-size: 13px;">¿Ya tienes cuenta? Inicia sesión</a>
                  </form>
                  <?php
              } else {
                  ?>
-                 <form action="" method="POST" class="login-form">
+                 <form action="index.php" method="POST" class="login-form">
                      <h3>Iniciar Sesión</h3>
                      <br>
                      <input type="text" name="username" placeholder="Usuario" required><br><br>
@@ -47,7 +51,27 @@
                  </form>
                  <?php
              }
-         } 
+         }
+        // CATÁLOGO DE PRODUCTOS (solo si hay sesión)
+        if(isset($_SESSION['user'])){
+            if(!empty($productArray)){
+                echo "<div class='product-grid'>";
+                foreach($productArray as $producto){
+                    echo "<div class='product-card'>";
+                    echo "<h3>" . htmlspecialchars($producto->getNombre()) . "</h3>";
+                    echo "<p class='product-desc'>" . htmlspecialchars($producto->getDescripcion()) . "</p>";
+                    echo "<p class='product-price'>" . number_format($producto->getPrecioActual(), 2) . " &euro;</p>";
+                    echo "<p class='product-stock'>Stock: " . $producto->getStock() . "</p>";
+                    echo "<a href='index.php?accion=addCarrito&id=" . $producto->getId() . "' class='btn-primary'>A&ntilde;adir al carrito</a>";
+                    echo "</div>";
+                }
+                echo "</div>";
+            } else {
+                echo "<p>No hay productos disponibles.</p>";
+            }
+        }
         ?>
+
+        
     </body>
 </html>
