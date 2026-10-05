@@ -1,5 +1,7 @@
 <?php
     // Los modelos ya se cargan en index.php (antes de session_start)
+    require_once 'repositories/ProductRepository.php';
+    require_once 'repositories/CarritoRepository.php';
 
     // LOGOUT
     if(isset($_GET['accion']) && $_GET['accion'] === 'logout'){
@@ -47,19 +49,35 @@
         }
     }
 
-    // PRODUCTOS
-    $productArray = [];
-    $resultado = $conexion->query("SELECT * FROM producto");
+    // Repositorios (solo si hay sesión)
+    $productRepo  = new ProductRepository($conexion);
+    $productArray = $productRepo->getAll();
 
-    if($resultado){
-        while($row = $resultado->fetch_assoc()){
-            $productArray[] = new Producto(
-                $row['id_producto'],
-                $row['nombre'],
-                $row['descripcion'],
-                $row['precio_actual'],
-                $row['stock']
-            );
+    $carritoItems = [];
+    $carritoTotal = 0.0;
+    $carritoRepo  = null;
+
+    if(isset($_SESSION['user'])){
+        $carritoRepo = new CarritoRepository($conexion, $_SESSION['user']->getId());
+
+        // AÑADIR AL CARRITO
+        if(isset($_GET['accion']) && $_GET['accion'] === 'addCarrito' && isset($_GET['id'])){
+            $carritoRepo->addProducto((int)$_GET['id']);
+            header("Location: index.php");
+            exit();
+        }
+
+        // ELIMINAR DEL CARRITO
+        if(isset($_GET['accion']) && $_GET['accion'] === 'removeCarrito' && isset($_GET['item'])){
+            $carritoRepo->removeItem((int)$_GET['item']);
+            header("Location: index.php");
+            exit();
+        }
+
+        // VER CARRITO
+        if(isset($_GET['accion']) && $_GET['accion'] === 'carrito'){
+            $carritoItems = $carritoRepo->getItems();
+            $carritoTotal = $carritoRepo->getTotal();
         }
     }
 ?>

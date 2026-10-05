@@ -7,71 +7,91 @@
     </head>
     <body>
         <?php
-         // 1. MENSAJES DE INFORMACIÓN
-         if(isset($info)){
-             echo "<div class='info-msg'>" . $info . "</div>";
-         }
+        // 1. MENSAJES DE INFORMACIÓN
+        if(isset($info)){
+            echo "<div class='info-msg'>" . $info . "</div>";
+        }
 
-         // 2. BIENVENIDA Y ACCIONES DE USUARIO
-         if(isset($_SESSION['user'])){
-             echo "<div class='user-welcome'>Bienvenido, <strong>" . htmlspecialchars($_SESSION['user']->getUserName()) . "</strong></div>";
-             echo "<a href='index.php?accion=logout' class='logout-link'>Cerrar sesión</a><br><hr>";
-         }
-
-         // 3. CATÁLOGO DE PRODUCTOS:
-         echo "<h2>Catálogo de Productos</h2>";
-
-         // 4. LOGIN Y REGISTRO DE USUARIO:
-         if(!isset($_SESSION['user'])){
-             echo "<hr>";
-             if (isset($_GET['accion']) && $_GET['accion'] === 'registro'){
-                 ?>
-                 <form action="index.php" method="POST" class="login-form">
-                     <h3>Registro de Usuario</h3>
-                     <br>
-                     <input type="text" name="username" placeholder="Usuario" required><br><br>
-                     <input type="email" name="email" placeholder="Email" required><br><br>
-                     <input type="password" name="password" placeholder="Contraseña" required><br><br>
-                     <input type="hidden" name="register" value="1">
-                     <input type="submit" value="Registrar" class="btn-primary">
-                     <br><br>
-                     <a href="index.php" style="font-size: 13px;">¿Ya tienes cuenta? Inicia sesión</a>
-                 </form>
-                 <?php
-             } else {
-                 ?>
-                 <form action="index.php" method="POST" class="login-form">
-                     <h3>Iniciar Sesión</h3>
-                     <br>
-                     <input type="text" name="username" placeholder="Usuario" required><br><br>
-                     <input type="password" name="password" placeholder="Contraseña" required><br><br>
-                     <input type="submit" value="Entrar" class="btn-primary">
-                     <br><br>
-                     <a href="index.php?accion=registro" style="font-size: 13px;">¿No tienes cuenta? Regístrate</a>
-                 </form>
-                 <?php
-             }
-         }
-        // CATÁLOGO DE PRODUCTOS (solo si hay sesión)
+        // 2. BIENVENIDA Y ACCIONES DE USUARIO
         if(isset($_SESSION['user'])){
-            if(!empty($productArray)){
-                echo "<div class='product-grid'>";
-                foreach($productArray as $producto){
-                    echo "<div class='product-card'>";
-                    echo "<h3>" . htmlspecialchars($producto->getNombre()) . "</h3>";
-                    echo "<p class='product-desc'>" . htmlspecialchars($producto->getDescripcion()) . "</p>";
-                    echo "<p class='product-price'>" . number_format($producto->getPrecioActual(), 2) . " &euro;</p>";
-                    echo "<p class='product-stock'>Stock: " . $producto->getStock() . "</p>";
-                    echo "<a href='index.php?accion=addCarrito&id=" . $producto->getId() . "' class='btn-primary'>A&ntilde;adir al carrito</a>";
-                    echo "</div>";
+            echo "<div class='user-welcome'>Bienvenido, <strong>" . htmlspecialchars($_SESSION['user']->getUserName()) . "</strong></div>";
+            echo "<a href='index.php?accion=carrito' class='btn-secondary'>🛒 Ver carrito</a> ";
+            echo "<a href='index.php?accion=logout' class='logout-link'>Cerrar sesión</a><hr>";
+
+            // 3A. VISTA DEL CARRITO
+            if(isset($_GET['accion']) && $_GET['accion'] === 'carrito'){
+                echo "<h2>🛒 Tu Carrito</h2>";
+                if(!empty($carritoItems)){
+                    echo "<table class='carrito-table'>";
+                    echo "<thead><tr><th>Producto</th><th>Precio</th><th>Cantidad</th><th>Subtotal</th><th></th></tr></thead>";
+                    echo "<tbody>";
+                    foreach($carritoItems as $item){
+                        $p = $item['producto'];
+                        echo "<tr>";
+                        echo "<td>" . htmlspecialchars($p->getNombre()) . "</td>";
+                        echo "<td>" . number_format($p->getPrecioActual(), 2) . " €</td>";
+                        echo "<td>" . $item['cantidad'] . "</td>";
+                        echo "<td>" . number_format($item['subtotal'], 2) . " €</td>";
+                        echo "<td><a href='index.php?accion=removeCarrito&item=" . $item['id_carrito_item'] . "' class='btn-danger'>Eliminar</a></td>";
+                        echo "</tr>";
+                    }
+                    echo "</tbody>";
+                    echo "<tfoot><tr><td colspan='3'><strong>TOTAL</strong></td><td colspan='2'><strong>" . number_format($carritoTotal, 2) . " €</strong></td></tr></tfoot>";
+                    echo "</table>";
+                } else {
+                    echo "<p>Tu carrito está vacío.</p>";
                 }
-                echo "</div>";
+                echo "<br><a href='index.php' class='btn-secondary'>← Seguir comprando</a>";
+
             } else {
-                echo "<p>No hay productos disponibles.</p>";
+                // 3B. CATÁLOGO DE PRODUCTOS
+                echo "<h2>Catálogo de Productos</h2>";
+                if(!empty($productArray)){
+                    echo "<div class='product-grid'>";
+                    foreach($productArray as $producto){
+                        echo "<div class='product-card'>";
+                        echo "<h3>" . htmlspecialchars($producto->getNombre()) . "</h3>";
+                        echo "<p class='product-desc'>" . htmlspecialchars($producto->getDescripcion()) . "</p>";
+                        echo "<p class='product-price'>" . number_format($producto->getPrecioActual(), 2) . " €</p>";
+                        echo "<p class='product-stock'>Stock: " . $producto->getStock() . "</p>";
+                        echo "<a href='index.php?accion=addCarrito&id=" . $producto->getId() . "' class='btn-primary'>Añadir al carrito</a>";
+                        echo "</div>";
+                    }
+                    echo "</div>";
+                } else {
+                    echo "<p>No hay productos disponibles.</p>";
+                }
+            }
+
+        } else {
+            // 4. LOGIN Y REGISTRO (sin sesión)
+            echo "<h2>Catálogo de Productos</h2><hr>";
+            if (isset($_GET['accion']) && $_GET['accion'] === 'registro'){
+                ?>
+                <form action="index.php" method="POST" class="login-form">
+                    <h3>Registro de Usuario</h3><br>
+                    <input type="text" name="username" placeholder="Usuario" required><br><br>
+                    <input type="email" name="email" placeholder="Email" required><br><br>
+                    <input type="password" name="password" placeholder="Contraseña" required><br><br>
+                    <input type="hidden" name="register" value="1">
+                    <input type="submit" value="Registrar" class="btn-primary">
+                    <br><br>
+                    <a href="index.php" style="font-size: 13px;">¿Ya tienes cuenta? Inicia sesión</a>
+                </form>
+                <?php
+            } else {
+                ?>
+                <form action="index.php" method="POST" class="login-form">
+                    <h3>Iniciar Sesión</h3><br>
+                    <input type="text" name="username" placeholder="Usuario" required><br><br>
+                    <input type="password" name="password" placeholder="Contraseña" required><br><br>
+                    <input type="submit" value="Entrar" class="btn-primary">
+                    <br><br>
+                    <a href="index.php?accion=registro" style="font-size: 13px;">¿No tienes cuenta? Regístrate</a>
+                </form>
+                <?php
             }
         }
         ?>
-
-        
     </body>
 </html>

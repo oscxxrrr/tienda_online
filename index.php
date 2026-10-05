@@ -4,6 +4,8 @@
 require_once 'models/user.php';
 require_once 'models/producto.php';
 require_once 'models/carrito.php';
+require_once 'repositories/ProductRepository.php';
+require_once 'repositories/CarritoRepository.php';
 
 session_start();
 
